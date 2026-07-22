@@ -50,6 +50,18 @@ body {
   letter-spacing: 0.08em;
 }
 
+.location span {
+  display: block;
+}
+
+.location-source {
+  margin-top: 3px;
+  color: #5c5a54;
+  font-size: 10px;
+  font-weight: normal;
+  letter-spacing: 0.06em;
+}
+
 .today {
   display: table;
   width: 100%;

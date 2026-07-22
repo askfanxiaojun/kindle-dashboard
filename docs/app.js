@@ -6,7 +6,9 @@
     latitude: "1.3521",
     longitude: "103.8198"
   };
-  var CACHE_KEY = "kindle-dashboard-weather-v1";
+  var WEATHER_CACHE_KEY = "kindle-dashboard-weather-v2";
+  var LOCATION_CACHE_KEY = "kindle-dashboard-location-v1";
+  var LOCATION_CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
   var WEEKDAYS = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
   var SHORT_WEEKDAYS = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
   var MONTHS = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
@@ -39,21 +41,171 @@
     return "";
   }
 
-  function getConfig() {
-    var latitude = getQuery("lat") || DEFAULTS.latitude;
-    var longitude = getQuery("lon") || DEFAULTS.longitude;
-    var city = getQuery("city") || DEFAULTS.city;
-    if (!isFinite(parseFloat(latitude))) {
-      latitude = DEFAULTS.latitude;
-    }
-    if (!isFinite(parseFloat(longitude))) {
-      longitude = DEFAULTS.longitude;
+  function validLatitude(value) {
+    var number = parseFloat(value);
+    return value !== "" && isFinite(number) && number >= -90 && number <= 90;
+  }
+
+  function validLongitude(value) {
+    var number = parseFloat(value);
+    return value !== "" && isFinite(number) && number >= -180 && number <= 180;
+  }
+
+  function getManualConfig() {
+    var latitude = getQuery("lat");
+    var longitude = getQuery("lon");
+    var city = getQuery("city") || "自定义位置";
+    if (!validLatitude(latitude) || !validLongitude(longitude)) {
+      return null;
     }
     return {
       city: city.substring(0, 28),
       latitude: latitude,
-      longitude: longitude
+      longitude: longitude,
+      source: "手动位置"
     };
+  }
+
+  function defaultConfig() {
+    return {
+      city: DEFAULTS.city,
+      latitude: DEFAULTS.latitude,
+      longitude: DEFAULTS.longitude,
+      source: "默认位置"
+    };
+  }
+
+  function validLocation(config) {
+    return config && config.city && validLatitude(String(config.latitude)) && validLongitude(String(config.longitude));
+  }
+
+  function saveLocationCache(config) {
+    try {
+      window.localStorage.setItem(LOCATION_CACHE_KEY, JSON.stringify({
+        city: config.city,
+        latitude: config.latitude,
+        longitude: config.longitude,
+        savedAt: new Date().getTime()
+      }));
+    } catch (ignore) {}
+  }
+
+  function loadLocationCache() {
+    try {
+      var raw = window.localStorage.getItem(LOCATION_CACHE_KEY);
+      var cached = raw ? JSON.parse(raw) : null;
+      var age = cached ? new Date().getTime() - cached.savedAt : LOCATION_CACHE_MAX_AGE + 1;
+      if (validLocation(cached) && age >= 0 && age < LOCATION_CACHE_MAX_AGE) {
+        cached.source = "IP 定位缓存";
+        return cached;
+      }
+    } catch (ignore) {}
+    return null;
+  }
+
+  function renderLocation(config) {
+    text("location-name", config.city);
+    text("location-source", config.source);
+  }
+
+  function loadIpLocation(callback) {
+    var providers = [
+      {
+        url: "https://get.geojs.io/v1/ip/geo.json",
+        parse: function (data) {
+          return {
+            city: data.city || data.region || data.country,
+            latitude: data.latitude,
+            longitude: data.longitude
+          };
+        }
+      },
+      {
+        url: "https://ipwho.is/?fields=success,city,region,country,latitude,longitude",
+        parse: function (data) {
+          if (!data.success) { return null; }
+          return {
+            city: data.city || data.region || data.country,
+            latitude: data.latitude,
+            longitude: data.longitude
+          };
+        }
+      }
+    ];
+
+    function requestProvider(index) {
+      var provider;
+      var request;
+      var settled = false;
+
+      if (index >= providers.length) {
+        callback(defaultConfig());
+        return;
+      }
+      provider = providers[index];
+      request = new XMLHttpRequest();
+
+      function next() {
+        if (!settled) {
+          settled = true;
+          requestProvider(index + 1);
+        }
+      }
+
+      request.onreadystatechange = function () {
+        var data;
+        var parsed;
+        var config;
+        if (request.readyState !== 4 || settled) {
+          return;
+        }
+        if (request.status >= 200 && request.status < 300) {
+          try {
+            data = JSON.parse(request.responseText);
+            parsed = provider.parse(data);
+            config = parsed ? {
+              city: String(parsed.city || "当前位置").substring(0, 28),
+              latitude: parsed.latitude,
+              longitude: parsed.longitude,
+              source: "IP 自动定位"
+            } : null;
+            if (validLocation(config)) {
+              settled = true;
+              saveLocationCache(config);
+              callback(config);
+              return;
+            }
+          } catch (ignore) {}
+        }
+        next();
+      };
+      request.timeout = 10000;
+      request.ontimeout = next;
+      request.onerror = next;
+      try {
+        request.open("GET", provider.url, true);
+        request.send(null);
+      } catch (ignore) {
+        next();
+      }
+    }
+
+    requestProvider(0);
+  }
+
+  function resolveConfig(callback) {
+    var manual = getManualConfig();
+    var cached;
+    if (manual) {
+      callback(manual);
+      return;
+    }
+    cached = loadLocationCache();
+    if (cached) {
+      callback(cached);
+      return;
+    }
+    loadIpLocation(callback);
   }
 
   function formatNumber(value) {
@@ -173,19 +325,26 @@
     return value.substring(11, 16);
   }
 
-  function saveCache(data) {
+  function saveWeatherCache(data, config) {
     try {
-      window.localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      window.localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+        data: data,
+        latitude: String(config.latitude),
+        longitude: String(config.longitude)
+      }));
     } catch (ignore) {}
   }
 
-  function loadCache() {
+  function loadWeatherCache(config) {
     try {
-      var raw = window.localStorage.getItem(CACHE_KEY);
-      return raw ? JSON.parse(raw) : null;
+      var raw = window.localStorage.getItem(WEATHER_CACHE_KEY);
+      var cached = raw ? JSON.parse(raw) : null;
+      if (cached && cached.data && cached.latitude === String(config.latitude) && cached.longitude === String(config.longitude)) {
+        return cached.data;
+      }
     } catch (ignore) {
-      return null;
     }
+    return null;
   }
 
   function loadWeather(config) {
@@ -208,18 +367,18 @@
         try {
           data = JSON.parse(request.responseText);
           renderWeather(data, false);
-          saveCache(data);
+          saveWeatherCache(data, config);
           return;
         } catch (ignore) {}
       }
-      weatherFailed();
+      weatherFailed(config);
     };
 
     request.timeout = 15000;
     request.ontimeout = function () {
       if (!finished) {
         finished = true;
-        weatherFailed();
+        weatherFailed(config);
       }
     };
     request.onerror = request.ontimeout;
@@ -227,12 +386,12 @@
       request.open("GET", endpoint, true);
       request.send(null);
     } catch (ignore) {
-      weatherFailed();
+      weatherFailed(config);
     }
   }
 
-  function weatherFailed() {
-    var cached = loadCache();
+  function weatherFailed(config) {
+    var cached = loadWeatherCache(config);
     if (cached) {
       renderWeather(cached, true);
     } else {
@@ -242,11 +401,14 @@
   }
 
   function init() {
-    var config = getConfig();
     var now = new Date();
-    text("location", config.city);
     renderDate(now);
-    loadWeather(config);
+    resolveConfig(function (config) {
+      renderLocation(config);
+      text("weather-state", "正在获取天气");
+      text("data-status", "连接天气服务中");
+      loadWeather(config);
+    });
   }
 
   if (document.readyState === "loading") {
