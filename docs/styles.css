@@ -1,0 +1,355 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #f7f4ec;
+  color: #111111;
+}
+
+body {
+  font-family: "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 900px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 32px 38px 22px;
+}
+
+.masthead {
+  display: table;
+  width: 100%;
+  padding: 0 0 11px;
+  border-bottom: 4px solid #1d1d1b;
+}
+
+.brand,
+.location {
+  display: table-cell;
+  vertical-align: bottom;
+}
+
+.brand {
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.22em;
+}
+
+.location {
+  text-align: right;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.today {
+  display: table;
+  width: 100%;
+  padding: 27px 0 25px;
+  border-bottom: 1px solid #1d1d1b;
+  table-layout: fixed;
+}
+
+.today-date,
+.current-weather {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+}
+
+.today-date {
+  border-right: 1px solid #1d1d1b;
+  padding-right: 30px;
+}
+
+.current-weather {
+  padding-left: 34px;
+}
+
+.weekday,
+.weather-state {
+  min-height: 28px;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.date-line {
+  margin-top: 8px;
+  white-space: nowrap;
+}
+
+.day-number {
+  display: inline-block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 112px;
+  line-height: 0.88;
+  letter-spacing: -0.08em;
+  vertical-align: bottom;
+}
+
+.month-year {
+  display: inline-block;
+  margin: 0 0 7px 18px;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 24px;
+  line-height: 1.35;
+  vertical-align: bottom;
+}
+
+.temperature-line {
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.temperature {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 108px;
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.degree {
+  display: inline-block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 48px;
+  vertical-align: top;
+  margin-top: 3px;
+}
+
+.weather-detail {
+  display: table;
+  width: 100%;
+  margin-top: 14px;
+  color: #5c5a54;
+  font-size: 14px;
+}
+
+.weather-detail span {
+  display: table-cell;
+  white-space: nowrap;
+}
+
+.weather-detail span:nth-child(2) {
+  text-align: center;
+}
+
+.weather-detail span:last-child {
+  text-align: right;
+}
+
+.weather-detail b {
+  color: #111111;
+}
+
+.forecast-section,
+.calendar-section {
+  padding-top: 22px;
+}
+
+.section-heading {
+  display: table;
+  width: 100%;
+  margin-bottom: 12px;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.section-heading span {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.section-heading .rule {
+  width: 100%;
+  padding-left: 14px;
+}
+
+.section-heading .rule:after {
+  content: "";
+  display: block;
+  height: 1px;
+  background: #1d1d1b;
+}
+
+.forecast-table,
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.forecast-table td {
+  padding: 9px 7px;
+  border-bottom: 1px solid #a7a39a;
+  font-size: 15px;
+}
+
+.forecast-table tr:last-child td {
+  border-bottom: 1px solid #1d1d1b;
+}
+
+.forecast-table td:first-child {
+  width: 17%;
+  padding-left: 0;
+  font-weight: bold;
+}
+
+.forecast-table td:nth-child(2) {
+  width: 33%;
+}
+
+.forecast-table td:nth-child(3),
+.forecast-table td:last-child {
+  text-align: right;
+}
+
+.calendar th {
+  height: 30px;
+  border-bottom: 2px solid #1d1d1b;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.calendar td {
+  height: 43px;
+  border-bottom: 1px solid #a7a39a;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+}
+
+.calendar td.muted {
+  color: #8d8980;
+}
+
+.calendar td.today-cell span {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  line-height: 30px;
+  font-weight: bold;
+}
+
+.statusbar {
+  display: table;
+  width: 100%;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 4px solid #1d1d1b;
+  color: #5c5a54;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+.statusbar span {
+  display: table-cell;
+}
+
+.statusbar span:last-child {
+  text-align: right;
+}
+
+.noscript {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 12px;
+  background: #ffffff;
+  border-top: 2px solid #000000;
+  text-align: center;
+}
+
+@media (max-width: 620px) {
+  .dashboard {
+    padding: 22px 24px 16px;
+  }
+
+  .today {
+    padding: 21px 0 20px;
+  }
+
+  .today-date {
+    padding-right: 20px;
+  }
+
+  .current-weather {
+    padding-left: 22px;
+  }
+
+  .day-number,
+  .temperature {
+    font-size: 84px;
+  }
+
+  .month-year {
+    margin-left: 11px;
+    font-size: 18px;
+  }
+
+  .weekday,
+  .weather-state {
+    min-height: 22px;
+    font-size: 17px;
+  }
+
+  .weather-detail {
+    font-size: 11px;
+  }
+
+  .forecast-table td {
+    font-size: 13px;
+  }
+
+  .calendar td {
+    height: 35px;
+    font-size: 17px;
+  }
+
+  .calendar td.today-cell span {
+    width: 29px;
+    height: 29px;
+    line-height: 25px;
+  }
+}
+
+@media (max-height: 850px) {
+  .dashboard {
+    padding-top: 18px;
+    padding-bottom: 12px;
+  }
+
+  .today {
+    padding-top: 17px;
+    padding-bottom: 16px;
+  }
+
+  .forecast-section,
+  .calendar-section {
+    padding-top: 14px;
+  }
+
+  .forecast-table td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .calendar td {
+    height: 31px;
+  }
+}

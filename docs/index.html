@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="refresh" content="900">
+  <meta name="theme-color" content="#f7f4ec">
+  <meta name="description" content="为 Kindle 电子墨水屏设计的天气、日期与月历信息板。">
+  <meta property="og:title" content="Kindle 信息屏">
+  <meta property="og:description" content="无需越狱，直接在 Kindle 浏览器中显示天气、日期和月历。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://askfanxiaojun.github.io/kindle-dashboard/">
+  <link rel="canonical" href="https://askfanxiaojun.github.io/kindle-dashboard/">
+  <title>Kindle 信息屏</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="dashboard" role="main">
+    <div class="masthead">
+      <div class="brand">DAILY PANEL</div>
+      <div class="location" id="location">新加坡</div>
+    </div>
+
+    <div class="today" aria-label="今天">
+      <div class="today-date">
+        <div class="weekday" id="weekday">星期三</div>
+        <div class="date-line">
+          <span class="day-number" id="day-number">22</span>
+          <span class="month-year" id="month-year">七月<br>2026</span>
+        </div>
+      </div>
+
+      <div class="current-weather">
+        <div class="weather-state" id="weather-state">正在获取天气</div>
+        <div class="temperature-line">
+          <span class="temperature" id="temperature">--</span><span class="degree">°</span>
+        </div>
+        <div class="weather-detail">
+          <span>体感 <b id="feels-like">--°</b></span>
+          <span>湿度 <b id="humidity">--%</b></span>
+          <span>风速 <b id="wind">-- km/h</b></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="forecast-section" aria-label="未来天气">
+      <div class="section-heading">
+        <span>未来四日</span>
+        <span class="rule"></span>
+      </div>
+      <table class="forecast-table" id="forecast-table">
+        <tbody>
+          <tr>
+            <td>今天</td><td>等待数据</td><td>-- / --°</td><td>降雨 --%</td>
+          </tr>
+          <tr>
+            <td>明天</td><td>等待数据</td><td>-- / --°</td><td>降雨 --%</td>
+          </tr>
+          <tr>
+            <td>周五</td><td>等待数据</td><td>-- / --°</td><td>降雨 --%</td>
+          </tr>
+          <tr>
+            <td>周六</td><td>等待数据</td><td>-- / --°</td><td>降雨 --%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="calendar-section" aria-label="月历">
+      <div class="section-heading">
+        <span id="calendar-title">2026年7月</span>
+        <span class="rule"></span>
+      </div>
+      <table class="calendar" id="calendar">
+        <thead>
+          <tr>
+            <th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th><th>日</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-body"></tbody>
+      </table>
+    </div>
+
+    <div class="statusbar">
+      <span id="data-status">连接天气服务中</span>
+      <span>每15分钟更新</span>
+    </div>
+  </div>
+
+  <noscript>
+    <p class="noscript">此页面需要启用 JavaScript 才能显示天气和日历。</p>
+  </noscript>
+  <script src="./app.js"></script>
+</body>
+</html>
